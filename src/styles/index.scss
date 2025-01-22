@@ -1,0 +1,52 @@
+@use './iconfont.scss';
+@use './vant-theme-custom.scss';
+@use './css-var.scss';
+
+body {
+  font-family: variable.$font-family-base;
+  font-size: 16px;
+  color: var(--color-text-1);
+  background-color: var(--color-bg-2);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  font-weight: normal;
+  padding: 0;
+}
+
+.text-primary-color {
+  color: var(--color-primary) !important;
+}
+
+.container-full {
+  box-sizing: border-box;
+  min-height: 100vh;
+  background-color: var(--color-bg-2);
+}
+
+.rich-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.scroller-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroller-y {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.dialogClass {
+  z-index: 100001 !important;
+}
