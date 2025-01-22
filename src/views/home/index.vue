@@ -6,19 +6,28 @@
         <div class="stock-name">{{ stock.stockName }}</div>
         <div class="stock-price">当前价格: {{ stock.day1Price }}</div>
       </div>
-      <div v-if="loading" class="loading">加载中...</div>
+      <div v-if="loading" class="loading-indicator">加载中...</div>
       <div v-if="!hasMore" class="no-more">没有更多数据了</div>
     </div>
   </div> -->
-  <use-virtual-list :items="list" :itemHeight="50" :visibleCount="10">
-    <template #default="{ item }">
-      <div class="stock-item">
-        <div class="stock-code">{{ item.stockCode }}</div>
-        <div class="stock-name">{{ item.stockName }}</div>
-        <div class="stock-price">当前价格: {{ item.day1Price }}</div>
-      </div>
-    </template>
-  </use-virtual-list>
+  <div class="container">
+    <use-virtual-list
+      :data="list"
+      :item-height="60"
+      :buffer="5"
+      :hasMore="hasMore"
+      @scroll="handleScroll"
+    >
+      <template #default="{ item }">
+        <div class="stock-item">
+          <div class="stock-code">{{ item.stockCode }}</div>
+          <div class="stock-name">{{ item.stockName }}</div>
+          <div class="stock-price">当前价格: {{ item.day1Price }}</div>
+        </div>
+      </template>
+    </use-virtual-list>
+    <!-- <div v-if="!hasMore" class="no-more">没有更多数据了</div> -->
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -30,7 +39,7 @@ import useVirtualList from '@/components/Layout/VirtualList.vue'
 
 const userStore = useUserStore()
 const offset = ref(0)
-const limit = ref(1000)
+const limit = ref(50)
 const arrayHeight = ref(document.body.clientHeight - 100)
 const list = ref<any[]>([])
 const loading = ref(false)
@@ -70,7 +79,7 @@ const getStockList = async () => {
         ismy: '',
         yili: '',
         dax: '',
-        xianzhi: ''
+        xianzhi: '30'
       },
       systeM_PARAMETERS: {
         appid: '',
@@ -91,7 +100,7 @@ const getStockList = async () => {
       }
       offset.value = nextOffset
       hasMore.value = newHasMore
-      console.log(list.value.length)
+      console.log(hasMore.value)
     }
   } catch (error) {
     console.error('获取数据失败:', error)
@@ -122,7 +131,7 @@ onMounted(async () => {
 <style scoped lang="scss">
 .container {
   padding: 0 16px;
-  max-height: calc(100vh - 50px);
+  height: calc(100vh - 50px);
   overflow-y: auto;
 }
 

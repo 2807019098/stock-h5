@@ -1,100 +1,94 @@
 <template>
   <div class="virtual-list" ref="container" @scroll="handleScroll">
-    <div class="spacer" :style="{ height: totalHeight + 'px' }"></div>
-    <div class="item-list">
-      <div
-        v-for="(item, index) in visibleItems"
-        :key="index"
-        class="item"
-        :style="{ transform: `translateY(${itemOffset[index]}px)` }"
-      >
-        <slot :item="item"></slot>
-      </div>
+    <div
+      v-for="(item, index) in visibleItems"
+      :key="item.key"
+      class="virtual-list-item"
+      :style="{ transform: `translateY(${item.offset}px)` }"
+    >
+      <slot :item="item" :index="index"></slot>
     </div>
+    <div v-if="loading" class="loading-indicator">加载中...</div>
+    <div v-if="!hasMore" class="no-more">没有更多数据了</div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, defineProps, watch } from 'vue'
 
 const props = defineProps({
-  items: {
+  data: {
     type: Array,
     required: true
   },
   itemHeight: {
     type: Number,
-    default: 50
+    default: 60
   },
-  visibleCount: {
+  totalHeight: {
     type: Number,
-    default: 10
+    default: 0
+  },
+  buffer: {
+    type: Number,
+    default: 5
+  },
+  hasMore: {
+    type: Boolean,
+    default: false
   }
 })
 
 const container = ref<HTMLElement | null>(null)
 const visibleItems = ref<any[]>([])
-const itemOffset = ref<number[]>([])
-const totalHeight = ref(0)
+const loading = ref(false)
+const hasMore = ref(props.hasMore)
 
 const calculateVisibleItems = () => {
   if (!container.value) return
-  const scrollTop = container.value.scrollTop
-  const startIndex = Math.floor(scrollTop / props.itemHeight)
-  const endIndex = Math.min(startIndex + props.visibleCount, props.items.length)
 
-  visibleItems.value = props.items.slice(startIndex, endIndex)
-  itemOffset.value = Array.from(
-    { length: endIndex - startIndex },
-    (_, i) => (startIndex + i) * props.itemHeight
+  const containerHeight = container.value.clientHeight
+  const scrollTop = container.value.scrollTop
+
+  // 计算能显示的最大数量
+  const startIndex = Math.floor(scrollTop / props.itemHeight)
+  const endIndex = Math.min(
+    props.data.length - 1,
+    Math.ceil((scrollTop + containerHeight) / props.itemHeight) + props.buffer
   )
-  totalHeight.value = props.items.length * props.itemHeight
+
+  visibleItems.value = props.data.slice(startIndex, endIndex + 1).map((item: any, index) => ({
+    ...item,
+    offset: startIndex * props.itemHeight + index * props.itemHeight
+  }))
 }
 
 const handleScroll = () => {
+  if (loading.value || !hasMore.value) return
   calculateVisibleItems()
 }
+
+watch(() => props.data, calculateVisibleItems, { immediate: true })
 
 onMounted(() => {
   calculateVisibleItems()
-  window.addEventListener('resize', calculateVisibleItems)
 })
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', calculateVisibleItems)
-})
-
-watch(
-  () => props.items,
-  () => {
-    calculateVisibleItems()
-  }
-)
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 .virtual-list {
-  position: relative;
   overflow-y: auto;
-  max-height: 100%;
-}
-
-.spacer {
+  position: relative;
   width: 100%;
+  height: 100%;
 }
-
-.item-list {
+.virtual-list-item {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  width: 100%;
+  font-size: 14px;
 }
-
-.item {
-  height: 50px; /* 默认高度 */
-  display: flex;
-  align-items: center;
-  background-color: #fff;
-  border-bottom: 1px solid #eee;
+.loading-indicator,
+.no-more {
+  text-align: center;
 }
 </style>
