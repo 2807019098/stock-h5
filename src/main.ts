@@ -4,7 +4,7 @@ import { setupStore } from './store'
 import 'amfe-flexible'
 import App from '@/App.vue'
 import router from './router'
-import { ConfigProvider, NavBar, Dialog, Toast, List } from 'vant'
+import { ConfigProvider, NavBar, Dialog, Toast, List, BackTop, Loading } from 'vant'
 import 'vant/lib/index.css'
 
 const app = createApp(App)
@@ -16,4 +16,6 @@ app.use(NavBar)
 app.use(Dialog)
 app.use(Toast)
 app.use(List)
+app.use(BackTop)
+app.use(Loading)
 app.mount('#app')
