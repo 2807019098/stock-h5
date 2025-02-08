@@ -14,7 +14,8 @@ export default defineComponent({
       return {
         ActionBarButtonWarningColor: unref(theme).colors.vice,
         actionBarButtonDangerColor: unref(theme).colors.primary,
-        cellFontSize: '14px'
+        cellFontSize: '14px',
+        cellTextColor: unref(theme).colors.text
       }
     })
 

@@ -22,7 +22,8 @@ export function GetRefreshToken(params: Recordable) {
   return request({
     url: '/api/Member/GetRefreshToken',
     method: 'POST',
-    data: params
+    data: params,
+    auth: true
   })
 }
 //#endregion

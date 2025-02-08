@@ -12,7 +12,7 @@
       <div class="ranking-list-tbody">
         <use-virtual-list
           :data="list"
-          :item-height="60"
+          :item-height="50"
           :buffer="10"
           :hasMore="hasMore"
           :loading="loading"
@@ -20,13 +20,13 @@
           @refresh="refreshStockList"
         >
           <template #default="{ item }">
-            <div class="ranking-list-row">
+            <div class="ranking-list-row" style="height: 50px">
               <div class="ranking-list-col">{{ item.stockCode }}</div>
               <div class="ranking-list-col">{{ item.stockName }}</div>
-              <div class="ranking-list-col">{{ item.endPrice }}</div>
-              <div class="ranking-list-col">{{ item.day1Price }}</div>
-              <div class="ranking-list-col">{{ item.day2Price }}</div>
-              <div class="ranking-list-col">{{ item.dayxPrice }}</div>
+              <div class="ranking-list-col">{{ item.endPrice.toFixed(2) }}</div>
+              <div class="ranking-list-col">{{ item.day1Price.toFixed(2) }}</div>
+              <div class="ranking-list-col">{{ item.day2Price.toFixed(2) }}</div>
+              <div class="ranking-list-col">{{ item.dayxPrice.toFixed(2) }}</div>
             </div>
           </template>
         </use-virtual-list>
@@ -90,9 +90,9 @@ const getStockList = async () => {
         sign: 'zhikaisoft'
       }
     }
-    const data = await GetStockList(payload)
-    if (data.message.messagE_CODE === '1') {
-      let { sList, page } = data.result
+    const response = await GetStockList(payload)
+    if (response.message.messagE_CODE === '1') {
+      let { sList, page } = response.result
       let { nextOffset, hasMore: newHasMore } = page
       if (sList.length > 0) {
         console.log(list?.value.length)
@@ -131,11 +131,8 @@ onMounted(async () => {
 
     .ranking-list-thead {
       display: flex;
-      color: rgba(26, 26, 27, 0.4);
-      font-size: 12px;
-      background-color: #fff;
+      font-size: 14px;
       font-weight: 400;
-      // padding: 0 20px;
 
       .ranking-list-col {
         display: flex;
@@ -143,28 +140,38 @@ onMounted(async () => {
         justify-content: center;
         height: 40px;
         flex: 1;
+        font-weight: bold;
 
         .tips {
           width: 20px;
           margin-left: 5px;
         }
 
-        // &:nth-child(5n-3) {
-        //   flex: 3;
-        //   justify-content: flex-start;
-        // }
-        // &:nth-child(5n-2) {
-        //   flex: 2;
-        //   justify-content: flex-start;
-        // }
-        // &:nth-child(5n-1) {
-        //   flex: 2;
-        //   justify-content: center;
-        // }
-        // &:nth-child(5n) {
-        //   flex: 2;
-        //   justify-content: flex-end;
-        // }
+        &:nth-child(6n-5) {
+          justify-content: flex-start;
+          flex: 1.2;
+        }
+
+        &:nth-child(6n-4) {
+          justify-content: center;
+          flex: 1.2;
+        }
+
+        &:nth-child(6n-3) {
+          justify-content: flex-end;
+        }
+
+        &:nth-child(6n-2) {
+          justify-content: flex-end;
+        }
+
+        &:nth-child(6n-1) {
+          justify-content: flex-end;
+        }
+
+        &:nth-child(6n) {
+          justify-content: flex-end;
+        }
       }
     }
 
@@ -173,22 +180,21 @@ onMounted(async () => {
 
       :deep(.ranking-list-row) {
         display: flex;
-        color: #1a1a1b;
-        font-size: 12px;
-        line-height: 80px;
+        font-size: 14px;
+        // line-height: 50px;
         font-weight: 400;
-        height: 80px;
-        // padding: 0 20px;
+        // height: 50px;
 
         .ranking-list-col {
           display: flex;
           align-items: center;
           justify-content: center;
-          height: 80px;
+          // height: 50px;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
           flex: 1;
+          font-weight: bold;
 
           .ranking-list-span {
             width: 100%;
@@ -198,41 +204,35 @@ onMounted(async () => {
             text-align: left;
           }
 
-          // &:nth-child(4n-3) {
-          //   flex: 3;
-          //   justify-content: flex-start;
-          // }
-          // &:nth-child(4n-2) {
-          //   flex: 2;
-          //   justify-content: flex-start;
-          // }
-          // &:nth-child(4n-1) {
-          //   flex: 2;
-          //   justify-content: center;
-          // }
-          // &:nth-child(4n) {
-          //   flex: 2;
-          //   justify-content: flex-end;
-          // }
+          &:nth-child(6n-5) {
+            justify-content: flex-start;
+            flex: 1.2;
+          }
+
+          &:nth-child(6n-4) {
+            justify-content: center;
+            flex: 1.2;
+          }
+
+          &:nth-child(6n-3) {
+            justify-content: flex-end;
+          }
+
+          &:nth-child(6n-2) {
+            justify-content: flex-end;
+          }
+
+          &:nth-child(6n-1) {
+            justify-content: flex-end;
+          }
+
+          &:nth-child(6n) {
+            justify-content: flex-end;
+          }
         }
       }
     }
   }
-}
-
-.item-list {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-  position: relative;
-}
-
-.item {
-  padding: 0 12px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  background-color: #fff;
 }
 
 .loading-indicator {

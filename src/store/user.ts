@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import storage from 'good-storage'
-import { FastRegisterLogin } from '@/api/user'
+import { FastRegisterLogin, GetRefreshToken } from '@/api/user'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -28,9 +28,9 @@ export const useUserStore = defineStore('user', {
           const expiryTime = Date.now() + result.expires_in * 1000
           storage.set('tokenExpiry', expiryTime)
           storage.set('token', result.access_token)
+          storage.set('refreshToken', result.refresh_token)
           this.token = result.access_token
           this.tokenExpiry = expiryTime
-          console.log(result)
         }
       } catch (error) {
         console.error('Login error:', error)
@@ -42,14 +42,28 @@ export const useUserStore = defineStore('user', {
       storage.set('token', '')
       storage.set('tokenExpiry', null)
     },
-    refreshToken() {
-      axios
-        .get('/api/refresh')
-        .then(({ data }) => {
-          storage.set('token', data.result.access_token)
-          this.token = data.result.access_token
-        })
-        .catch(() => {})
+    async refreshToken() {
+      try {
+        const payload = {
+          businesS_PARAMETERS: {
+            refreshToken: storage.get('refreshToken')
+          },
+          systeM_PARAMETERS: {
+            appid: '',
+            accesS_TOKEN: '',
+            timestamp: '',
+            sign: 'zhikaisoft'
+          }
+        }
+        const { message, result } = await GetRefreshToken(payload)
+        if (message.messagE_CODE === '1') {
+          const expiryTime = Date.now() + result.expires_in * 1000
+          storage.set('tokenExpiry', expiryTime)
+          storage.set('token', result.access_token)
+          this.token = result.access_token
+          this.tokenExpiry = expiryTime
+        }
+      } catch (error) {}
     }
   }
 })

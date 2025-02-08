@@ -26,6 +26,10 @@ watch(show, (newValue: boolean) => {
       <span></span>
       <span></span>
     </div>
+    <div class="search"></div>
+    <div class="filter">
+      <van-icon name="filter-o" size="25px" color="var(--color-primary)" />
+    </div>
   </div>
   <teleport to="body">
     <van-popup v-model:show="show" position="left">
@@ -86,6 +90,28 @@ watch(show, (newValue: boolean) => {
       }
     }
   }
+  .search {
+    position: absolute;
+    left: calc(2 * var(--van-cell-horizontal-padding) + 25px);
+    right: calc(2 * var(--van-cell-horizontal-padding) + 25px);
+    top: 50%;
+    transform: translateY(-50%);
+    height: 30px;
+    background-color: #ffffff;
+    border-radius: 30px;
+  }
+  .filter {
+    position: absolute;
+    right: var(--van-cell-horizontal-padding);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .menu {
@@ -119,7 +145,7 @@ watch(show, (newValue: boolean) => {
     font-weight: bold;
     display: flex;
     align-items: center;
-    color: var(--color-text-1);
+    color: var(--color-primary);
     padding: var(--van-cell-horizontal-padding);
 
     .menuLi {
@@ -140,5 +166,8 @@ watch(show, (newValue: boolean) => {
       }
     }
   }
+}
+.dark .search {
+  background-color: var(--color-text-8);
 }
 </style>

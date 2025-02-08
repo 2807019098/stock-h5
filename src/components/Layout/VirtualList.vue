@@ -146,7 +146,7 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .virtual-list {
   overflow-y: auto;
   position: relative;
@@ -154,15 +154,27 @@ onUnmounted(() => {
   height: 100%;
 }
 .virtual-list-item {
+  padding: 0 5px;
   position: absolute;
   width: 100%;
   font-size: 14px;
   &:nth-child(2n-1) {
-    background-color: #fffff9;
+    background-color: rgb(255, 255, 249);
   }
 
   &:nth-child(2n) {
-    background-color: #ffffff;
+    background-color: rgb(255, 255, 255);
+  }
+}
+.van-theme-dark {
+  .virtual-list-item {
+    &:nth-child(2n-1) {
+      background-color: rgb(58, 58, 58);
+    }
+
+    &:nth-child(2n) {
+      background-color: rgb(44, 44, 44);
+    }
   }
 }
 .refresh-indicator {
