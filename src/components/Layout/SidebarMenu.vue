@@ -8,11 +8,15 @@ defineOptions({
 
 const route = useRoute()
 const show = ref<boolean>(false)
+const filter = ref<boolean>(false)
 const iconOpacity = ref<number>(0)
 
 const handleMenu = () => {
-  console.log('menu')
   show.value = true
+}
+
+const openFilter = () => {
+  filter.value = true
 }
 
 watch(show, (newValue: boolean) => {
@@ -27,8 +31,8 @@ watch(show, (newValue: boolean) => {
       <span></span>
     </div>
     <div class="search"></div>
-    <div class="filter">
-      <van-icon name="filter-o" size="25px" color="var(--color-primary)" />
+    <div class="filter" @click="openFilter">
+      <van-icon name="filter-o" size="30px" color="var(--color-primary)" />
     </div>
   </div>
   <teleport to="body">
@@ -36,20 +40,14 @@ watch(show, (newValue: boolean) => {
       <div class="menu">
         <h2 class="title">
           <span>股市一筋</span>
-          <van-icon
-            name="cross"
-            class="close"
-            @click="show = false"
-            size="25px"
-            :style="{ opacity: iconOpacity }"
-          />
+          <van-icon name="cross" class="close" @click="show = false" size="25px" :style="{ opacity: iconOpacity }" />
         </h2>
         <van-cell-group :border="false">
-          <van-cell title="股市前瞻" to="/" @click="show = false" />
-          <van-cell title="前沿资讯" to="/message" @click="show = false" />
-          <van-cell title="我的自选" to="/mystock" @click="show = false" />
-          <van-cell title="个人中心" to="/mine" @click="show = false" />
-          <van-cell title="帮助中心" to="/help" @click="show = false" />
+          <van-cell style="padding: 12px" title="股市前瞻" to="/" @click="show = false" />
+          <van-cell style="padding: 12px" title="前沿资讯" to="/message" @click="show = false" />
+          <van-cell style="padding: 12px" title="我的自选" to="/mystock" @click="show = false" />
+          <van-cell style="padding: 12px" title="个人中心" to="/mine" @click="show = false" />
+          <van-cell style="padding: 12px" title="帮助中心" to="/help" @click="show = false" />
         </van-cell-group>
         <div class="footer">
           <div class="menuLi" @click="(show = false), $router.push('/mysetting')">
@@ -62,6 +60,7 @@ watch(show, (newValue: boolean) => {
         </div>
       </div>
     </van-popup>
+    <ScreenPannel :show="filter" />
   </teleport>
 </template>
 <style lang="scss" scoped>
@@ -70,13 +69,15 @@ watch(show, (newValue: boolean) => {
   position: sticky;
   top: 0;
   background-color: var(--color-text-8);
+
   .bar {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    left: var(--van-cell-horizontal-padding);
+    left: 12px;
+
     span {
       width: 25px;
       height: 3px;
@@ -90,19 +91,21 @@ watch(show, (newValue: boolean) => {
       }
     }
   }
+
   .search {
     position: absolute;
-    left: calc(2 * var(--van-cell-horizontal-padding) + 25px);
-    right: calc(2 * var(--van-cell-horizontal-padding) + 25px);
+    left: calc(2 * 12px + 25px);
+    right: calc(2 * 12px + 25px);
     top: 50%;
     transform: translateY(-50%);
     height: 30px;
     background-color: #ffffff;
     border-radius: 30px;
   }
+
   .filter {
     position: absolute;
-    right: var(--van-cell-horizontal-padding);
+    right: 12px;
     top: 50%;
     transform: translateY(-50%);
     width: 25px;
@@ -118,19 +121,20 @@ watch(show, (newValue: boolean) => {
   min-width: 100vw;
   height: 100vh;
   position: relative;
+  background-color: var(--van-popup-background);
 
   .title {
     font-size: 20px;
     font-weight: 600;
     color: var(--color-primary);
-    padding: var(--van-cell-horizontal-padding);
+    padding: 12px;
     margin-bottom: 10px;
     font-family: 'vant-icon';
     position: relative;
 
     .close {
       position: absolute;
-      right: var(--van-cell-horizontal-padding);
+      right: 12px;
       top: 50%;
       transform: translateY(-50%);
     }
@@ -146,7 +150,7 @@ watch(show, (newValue: boolean) => {
     display: flex;
     align-items: center;
     color: var(--color-primary);
-    padding: var(--van-cell-horizontal-padding);
+    padding: 12px;
 
     .menuLi {
       display: flex;
@@ -167,6 +171,7 @@ watch(show, (newValue: boolean) => {
     }
   }
 }
+
 .dark .search {
   background-color: var(--color-text-8);
 }

@@ -1,14 +1,14 @@
-import { computed, defineComponent, unref } from 'vue'
-import type { ConfigProviderThemeVars } from 'vant'
-import { useBaseStore } from '@/store/app'
-import { useRoute } from 'vue-router'
+import { computed, defineComponent, unref } from 'vue';
+import type { ConfigProviderThemeVars } from 'vant';
+import { useBaseStore } from '@/store/app';
+import { useRoute } from 'vue-router';
 
 export default defineComponent({
   name: 'AppProvider',
   setup(_, { slots }) {
-    const appStore = useBaseStore()
-    const route = useRoute()
-    const theme = computed(() => appStore.getTheme)
+    const appStore = useBaseStore();
+    const route = useRoute();
+    const theme = computed(() => appStore.getTheme);
 
     const themeVars = computed<ConfigProviderThemeVars>(() => {
       return {
@@ -16,8 +16,8 @@ export default defineComponent({
         actionBarButtonDangerColor: unref(theme).colors.primary,
         cellFontSize: '14px',
         cellTextColor: unref(theme).colors.text
-      }
-    })
+      };
+    });
 
     return () => {
       return (
@@ -25,10 +25,11 @@ export default defineComponent({
           theme={unref(theme).mode}
           themeVars={unref(themeVars)}
           theme-vars-scope="global"
+          style="height: 100%;display: flex;flex-direction: column;"
         >
           {slots.default?.()}
         </van-config-provider>
-      )
-    }
+      );
+    };
   }
-})
+});

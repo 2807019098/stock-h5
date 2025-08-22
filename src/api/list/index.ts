@@ -8,6 +8,7 @@ export function GetStockList(params: Recordable) {
   return request({
     url: '/api/StockList/GetStockList',
     method: 'POST',
+    headers: {},
     data: params
   })
 }
@@ -21,6 +22,7 @@ export function GetMyStockList(params: Recordable) {
   return request({
     url: '/api/StockList/GetMyStockList',
     method: 'POST',
+    headers: {},
     data: params
   })
 }
@@ -34,6 +36,7 @@ export function AddStock(params: Recordable) {
   return request({
     url: '/api/StockList/AddStock',
     method: 'POST',
+    headers: {},
     data: params
   })
 }
@@ -47,6 +50,7 @@ export function DeleteStock(params: Recordable) {
   return request({
     url: '/api/StockList/DeleteStock',
     method: 'POST',
+    headers: {},
     data: params
   })
 }

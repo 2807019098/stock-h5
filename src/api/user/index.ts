@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import type { MyRequestConfig } from '@/utils/request/type'
 
 //#region 用户快速登录注册
 /**
@@ -9,8 +10,8 @@ export function FastRegisterLogin(params: Recordable) {
     url: '/api/Member/FastRegisterLogin',
     method: 'POST',
     data: params,
-    auth: true
-  })
+    authRequired: true
+  } as MyRequestConfig)
 }
 //#endregion
 
@@ -23,8 +24,8 @@ export function GetRefreshToken(params: Recordable) {
     url: '/api/Member/GetRefreshToken',
     method: 'POST',
     data: params,
-    auth: true
-  })
+    authRequired: true
+  } as MyRequestConfig)
 }
 //#endregion
 

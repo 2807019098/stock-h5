@@ -4,19 +4,19 @@
  * @param {number} interval 时间间隔的阈值
  */
 export function throttle(fn: any, interval: number) {
-  let last = 0
+  let last = 0;
   return function () {
     // @ts-ignore
     // eslint-disable-next-line
-    const context = this
-    const args = arguments
-    const now = Number(new Date())
+    const context = this;
+    const args = arguments;
+    const now = Number(new Date());
 
     if (now - last >= interval) {
-      last = now
-      fn.apply(context, args)
+      last = now;
+      fn.apply(context, args);
     }
-  }
+  };
 }
 
 /**
@@ -25,26 +25,26 @@ export function throttle(fn: any, interval: number) {
  * @param {number} delay 每次推迟执行的等待时间
  */
 export function debounce(fn: any, delay: number) {
-  let last = 0
-  let timer: any = null
+  let last = 0;
+  let timer: any = null;
   return function () {
     // @ts-ignore
     // eslint-disable-next-line
-    const context = this
-    const args = arguments
-    const now = Number(new Date())
+    const context = this;
+    const args = arguments;
+    const now = Number(new Date());
 
     if (now - last < delay) {
-      clearTimeout(timer)
+      clearTimeout(timer);
       timer = setTimeout(() => {
-        last = now
-        fn.apply(context, args)
-      }, delay)
+        last = now;
+        fn.apply(context, args);
+      }, delay);
     } else {
-      last = now
-      fn.apply(context, args)
+      last = now;
+      fn.apply(context, args);
     }
-  }
+  };
 }
 
 /**
@@ -53,14 +53,16 @@ export function debounce(fn: any, delay: number) {
  * @returns 拷贝后的新对象
  */
 export function deepClone<T = any>(source: Record<any, string>): T {
-  const target: any = Array.isArray(source) ? [] : {}
+  const target: any = Array.isArray(source) ? [] : {};
   // eslint-disable-next-line guard-for-in
   for (const key in source) {
     target[key] =
-      source[key] !== null && typeof source[key] === 'object' ? deepClone(source[key]) : source[key]
+      source[key] !== null && typeof source[key] === 'object'
+        ? deepClone(source[key])
+        : source[key];
   }
 
-  return target
+  return target;
 }
 
 /**
@@ -73,8 +75,8 @@ export function deepClone<T = any>(source: Record<any, string>): T {
  * ```
  */
 export const randomIntegerInRange = function (m: number, n: number) {
-  return m + Math.floor(Math.random() * (n - m))
-}
+  return m + Math.floor(Math.random() * (n - m));
+};
 
 /**
  * 转换驼峰拼写的字符串为特定格式
@@ -84,7 +86,7 @@ export function fromCamelCase(str: string, separator = '_') {
   return str
     .replace(/([a-z\d])([A-Z])/g, '$1' + separator + '$2')
     .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, '$1' + separator + '$2')
-    .toLowerCase()
+    .toLowerCase();
 }
 
 /**
@@ -93,38 +95,38 @@ export function fromCamelCase(str: string, separator = '_') {
 export function mapMatchingProperties(target: Record<any, string>, source: Record<any, string>) {
   Object.keys(target).forEach((key) => {
     if (key in source) {
-      target[key] = source[key]
+      target[key] = source[key];
     }
-  })
+  });
 
-  return target
+  return target;
 }
 
 // 使用requestAnimationFrame实现节流
 // requestAnimationFrame会在浏览器下一次重绘之前执行回调函数
 export const rafThrottle = (fn: Function) => {
-  let ticking = false
+  let ticking = false;
   return function (this: any, ...args: any[]) {
-    if (ticking) return
-    ticking = true
+    if (ticking) return;
+    ticking = true;
     window.requestAnimationFrame(() => {
-      fn.apply(this, args)
-      ticking = false
-    })
-  }
-}
+      fn.apply(this, args);
+      ticking = false;
+    });
+  };
+};
 
 // 空闲工作
 export const idle = (fn: (...args: any[]) => void) => {
   if ('requestIdleCallback' in window) {
     return function (this: any, ...args: any[]) {
-      window.requestIdleCallback(fn.bind(this, ...args))
-    }
+      window.requestIdleCallback(fn.bind(this, ...args));
+    };
   } else if ('requestAnimationFrame' in window) {
     return function (this: any, ...args: any[]) {
-      window.requestAnimationFrame(fn.bind(this, ...args))
-    }
+      window.requestAnimationFrame(fn.bind(this, ...args));
+    };
   } else {
-    return fn
+    return fn;
   }
-}
+};

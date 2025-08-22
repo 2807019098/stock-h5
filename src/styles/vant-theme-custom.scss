@@ -10,3 +10,7 @@
 .van-action-bar-button--last {
   background: var(--color-primary);
 }
+
+.van-dialog__message--has-title {
+  padding-top: var(--van-dialog-message-padding) !important;
+}

@@ -1,5 +1,4 @@
-import { defineAsyncComponent } from 'vue'
-import type { RouteRecordRaw } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -12,7 +11,8 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/home/index.vue'),
         meta: {
           title: '股市前瞻',
-          navType: 'main'
+          navType: 'main',
+          keepAlive: true
         }
       },
       {
@@ -21,7 +21,8 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/message/index.vue'),
         meta: {
           title: '前沿资讯',
-          navType: 'main'
+          navType: 'main',
+          keepAlive: true
         }
       },
       {
@@ -30,7 +31,8 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/mystock/index.vue'),
         meta: {
           title: '我的自选',
-          navType: 'main'
+          navType: 'main',
+          keepAlive: true
         }
       },
       {
@@ -39,7 +41,8 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/mine/index.vue'),
         meta: {
           title: '个人中心',
-          navType: 'main'
+          navType: 'main',
+          keepAlive: true
         }
       },
       {
@@ -48,7 +51,8 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/help/index.vue'),
         meta: {
           title: '帮助中心',
-          navType: 'main'
+          navType: 'main',
+          keepAlive: true
         }
       }
     ]
@@ -59,7 +63,8 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/mysetting/index.vue'),
     meta: {
       title: '设置',
-      navType: 'default'
+      navType: 'default',
+      keepAlive: false
     }
   },
   {
@@ -68,7 +73,8 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/theme/index.vue'),
     meta: {
       title: '主题',
-      navType: 'default'
+      navType: 'default',
+      keepAlive: false
     }
   },
   {
@@ -77,7 +83,8 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/login/index.vue'),
     meta: {
       title: '登录',
-      navType: 'default'
+      navType: 'default',
+      keepAlive: false
     }
   },
   {
@@ -85,10 +92,11 @@ const routes: RouteRecordRaw[] = [
     name: 'error',
     meta: {
       title: '404',
-      navType: 'default'
+      navType: 'default',
+      keepAlive: false
     },
     component: () => import('@/views/error/404.vue')
   }
-]
+];
 
-export default routes
+export default routes;

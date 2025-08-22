@@ -17,7 +17,9 @@ declare module 'vue' {
     IconSkin: typeof import('./components/icons/IconSkin.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ScreenPannel: typeof import('./components/Layout/ScreenPannel.vue')['default']
     SidebarMenu: typeof import('./components/Layout/SidebarMenu.vue')['default']
+    VirtualList: typeof import('./components/Layout/VirtualList.vue')['default']
     VirtualPagination: typeof import('./components/Layout/VirtualPagination.vue')['default']
     VirtualSrollSameHeightVirtualList: typeof import('./components/virtualSrollSameHeightVirtualList.vue')['default']
   }

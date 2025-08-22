@@ -1,24 +1,13 @@
 <template>
-  <div
-    class="virtual-list"
-    ref="container"
-    :style="{ transform: `translateY(${translateY}px)` }"
-    @scroll="handleScroll"
-    @touchstart="handleTouchStart"
-    @touchmove="handleTouchMove"
-    @touchend="handleTouchEnd"
-  >
+  <div class="virtual-list" ref="container" :style="{ transform: `translateY(${translateY}px)` }" @scroll="handleScroll"
+    @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd">
     <div v-if="refreshing" class="refresh-indicator">
       <van-loading v-if="!props.loading" color="var(--color-primary)" vertical>
         下拉刷新...
       </van-loading>
     </div>
-    <div
-      v-for="(item, index) in visibleItems"
-      :key="item.key"
-      class="virtual-list-item"
-      :style="{ transform: `translateY(${item.offset}px)` }"
-    >
+    <div v-for="(item, index) in visibleItems" :key="item.key" class="virtual-list-item"
+      :style="{ transform: `translateY(${item.offset}px)` }">
       <slot :item="item" :index="index"></slot>
     </div>
   </div>
@@ -26,75 +15,95 @@
     <van-loading type="spinner" color="var(--color-primary)" vertical> 加载中... </van-loading>
   </div>
   <div v-if="!props.hasMore" class="no-more">没有更多数据了</div>
-  <van-back-top target=".virtual-list" right="var(--van-cell-horizontal-padding)" bottom="10vh" />
+  <van-back-top target=".virtual-list" right="var(--van-cell-horizontal-padding)" bottom="10vh" @click="goback" />
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, defineProps, watch, defineEmits, onUnmounted } from 'vue'
+import { ref, onMounted, watch, defineEmits, onUnmounted, computed } from 'vue'
 import { debounce } from '@/utils/lodash'
 
-const props = defineProps({
-  data: {
-    type: Array,
-    required: true
-  },
-  itemHeight: {
-    type: Number,
-    default: 60
-  },
-  totalHeight: {
-    type: Number,
-    default: 0
-  },
-  buffer: {
-    type: Number,
-    default: 10
-  },
-  hasMore: {
-    type: Boolean,
-    default: false
-  },
-  loading: {
-    type: Boolean,
-    default: false
-  }
-})
+interface VirtualListItem {
+  key: string | number;
+  offset: number;
+  [key: string]: any;
+}
 
-const emit = defineEmits(['loadMore', 'refresh'])
+const props = defineProps<{
+  data: any[];
+  itemHeight?: number;
+  buffer?: number;
+  hasMore?: boolean;
+  loading?: boolean;
+}>()
+
+const emit = defineEmits<{
+  loadMore: [];
+  refresh: [];
+}>()
+
 const container = ref<HTMLElement | null>(null)
-const visibleItems = ref<any[]>([])
+const visibleItems = ref<VirtualListItem[]>([])
 const refreshing = ref(false)
 const translateY = ref(0)
 const startY = ref(0)
+const lastScrollTop = ref<number>(0)
 
-const calculateVisibleItems = () => {
+const itemHeight = computed(() => props.itemHeight || 50)
+const buffer = computed(() => props.buffer || 10)
+const hasMore = computed(() => props.hasMore || false)
+const loading = computed(() => props.loading || false)
+
+const calculateVisibleItems = (dynamicBuffer: number) => {
   if (!container.value) return
 
   const containerHeight = container.value.clientHeight
   const scrollTop = container.value.scrollTop
 
-  // 计算能显示的最大数量
-  const startIndex = Math.floor(scrollTop / props.itemHeight)
-  const endIndex = Math.min(
-    props.data.length - 1,
-    Math.ceil((scrollTop + containerHeight) / props.itemHeight) + props.buffer
-  )
+  // 计算起始索引
+  const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight.value))
+
+  // 计算可见项的数量
+  const visibleCount = Math.ceil(containerHeight / itemHeight.value) + dynamicBuffer
+
+  // 计算结束索引
+  let endIndex = Math.min(startIndex + visibleCount - 1, props.data.length - 1)
+
+  // 确保 endIndex 不会超出数据长度
+  endIndex = Math.min(endIndex, props.data.length - 1)
+
+  // 确保即使最后一页不满一整页也能显示
+  if (scrollTop + containerHeight >= props.data.length * itemHeight.value) {
+    endIndex = props.data.length - 1
+  }
 
   visibleItems.value = props.data.slice(startIndex, endIndex + 1).map((item: any, index) => ({
     ...item,
-    offset: startIndex * props.itemHeight + index * props.itemHeight
+    key: item.id || item.key || `${startIndex}-${index}`,
+    offset: startIndex * itemHeight.value + index * itemHeight.value
   }))
+  console.log(visibleCount)
+  console.log('endIndex:', endIndex)
 }
 
 const handleScroll = debounce(() => {
-  if (props.loading || !props.hasMore) return
-  calculateVisibleItems()
+  if (loading.value || !hasMore.value) return
+
   const containerHeight = container.value!.clientHeight
   const scrollTop = container.value!.scrollTop
-  const totalHeight = props.data.length * props.itemHeight
-  if (containerHeight + scrollTop + props.buffer * props.itemHeight >= totalHeight) {
+
+  // 根据滚动速度动态调整 buffer 值
+  const speed = Math.abs(Number(lastScrollTop.value) - scrollTop) // 计算滚动速度
+  const dynamicBuffer = speed > 50 ? 20 : 5 // 快速滚动时增加 buffer
+
+  // 更新可见项
+  calculateVisibleItems(dynamicBuffer)
+
+  const totalListHeight = props.data.length * itemHeight.value
+
+  if (containerHeight + scrollTop + buffer.value * itemHeight.value >= totalListHeight) {
     emit('loadMore')
   }
+
   if (scrollTop <= -50) {
     if (!refreshing.value) {
       refreshing.value = true
@@ -105,7 +114,20 @@ const handleScroll = debounce(() => {
       translateY.value = 0
     }
   }
-}, 100)
+}, 10)
+
+// 使用 requestAnimationFrame 来优化滚动处理
+let isScrolling = false
+
+const debouncedHandleScroll = () => {
+  if (isScrolling) return
+
+  isScrolling = true
+  requestAnimationFrame(() => {
+    handleScroll()
+    isScrolling = false
+  })
+}
 
 const handleTouchStart = (event: TouchEvent) => {
   startY.value = event.touches[0].clientY // 记录触摸开始的位置
@@ -121,6 +143,7 @@ const handleTouchMove = (event: TouchEvent) => {
     // 确保在顶部且下拉
     translateY.value = Math.min(distance, 50) // 限制最大下拉距离
     refreshing.value = true // 设置为正在刷新
+    event.preventDefault() // 阻止默认的触摸事件
   }
 }
 
@@ -134,15 +157,27 @@ const handleTouchEnd = () => {
   translateY.value = 0
 }
 
-watch(() => props.data, calculateVisibleItems, { immediate: true })
+const goback = () => {
+  if (container.value) {
+    container.value.scrollTop = 0 // 滚动到顶部
+    translateY.value = 0 // 重置 translateY
+    calculateVisibleItems(buffer.value) // 重新计算可见项
+  }
+}
+
+watch(
+  () => props.data,
+  () => calculateVisibleItems(buffer.value),
+  { immediate: true }
+)
 
 onMounted(() => {
-  calculateVisibleItems()
-  window.addEventListener('scroll', handleScroll)
+  calculateVisibleItems(buffer.value)
+  container.value?.addEventListener('scroll', debouncedHandleScroll)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
+  container.value?.removeEventListener('scroll', debouncedHandleScroll)
 })
 </script>
 
@@ -152,20 +187,25 @@ onUnmounted(() => {
   position: relative;
   width: 100%;
   height: 100%;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
+
 .virtual-list-item {
   padding: 0 5px;
   position: absolute;
   width: 100%;
   font-size: 14px;
+
   &:nth-child(2n-1) {
-    background-color: rgb(255, 255, 249);
+    background-color: rgb(255, 255, 240);
   }
 
   &:nth-child(2n) {
     background-color: rgb(255, 255, 255);
   }
 }
+
 .van-theme-dark {
   .virtual-list-item {
     &:nth-child(2n-1) {
@@ -177,17 +217,20 @@ onUnmounted(() => {
     }
   }
 }
+
 .refresh-indicator {
   font-size: 14px;
   text-align: center;
   transition: transform 0.3s ease;
   color: var(--color-primary);
 }
+
 .no-more {
   margin-top: 10px;
   text-align: center;
   font-size: 14px;
 }
+
 .loading {
   text-align: center;
   font-size: 14px;

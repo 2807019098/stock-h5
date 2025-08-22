@@ -6,5 +6,7 @@ defineOptions({
 </script>
 <template>
   <sidebar-menu />
-  <router-view />
+  <keep-alive>
+    <router-view />
+  </keep-alive>
 </template>

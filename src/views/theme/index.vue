@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, unref } from 'vue'
+import { computed, onActivated, onMounted, ref, unref } from 'vue'
 import { useRouter } from 'vue-router'
 import { palettes } from '@/common/app/index'
 
@@ -55,18 +55,21 @@ function onThemeColorChange(index: number) {
 function onSubmit() {
   router.back()
 }
+
+onMounted(() => {
+  alert(1)
+})
+onActivated(() => {
+  alert(2)
+})
 </script>
 
 <template>
   <div class="container">
     <div class="h2">选择主题</div>
     <div class="mode-list">
-      <div
-        v-for="(item, index) in modeList"
-        :key="index"
-        :class="['mode-item', theme.mode === item.value ? 'active' : '']"
-        @click="onThemeModeChange(item.value)"
-      >
+      <div v-for="(item, index) in modeList" :key="index"
+        :class="['mode-item', theme.mode === item.value ? 'active' : '']" @click="onThemeModeChange(item.value)">
         <img class="mode-item-pic" :src="item.pic" :alt="item.label" />
         <span class="mode-item-title">
           {{ item.label }}
@@ -75,34 +78,18 @@ function onSubmit() {
     </div>
     <div class="h2">选择配色</div>
     <div class="color-list">
-      <van-cell
-        v-for="(item, index) in list"
-        :key="index"
-        :title="item.label"
-        @click="onThemeColorChange(index)"
-      >
+      <van-cell v-for="(item, index) in list" :key="index" :title="item.label" @click="onThemeColorChange(index)">
         <template #label>
           <div :class="['color', active === index ? 'active' : '']">
-            <div
-              v-for="(color, colorIndex) in item.colorList"
-              :key="colorIndex"
-              class="color-item"
-              :style="{ background: color }"
-            ></div>
+            <div v-for="(color, colorIndex) in item.colorList" :key="colorIndex" class="color-item"
+              :style="{ background: color }"></div>
           </div>
         </template>
       </van-cell>
     </div>
 
     <AffixBar>
-      <van-button
-        class="submit-bar-button"
-        block
-        type="primary"
-        round
-        :color="current.value"
-        @click="onSubmit"
-      >
+      <van-button class="submit-bar-button" block type="primary" round :color="current.value" @click="onSubmit">
         返回
       </van-button>
     </AffixBar>
@@ -190,6 +177,7 @@ function onSubmit() {
   display: flex;
   align-items: center;
   justify-content: center;
+
   &-button {
     width: 80%;
     height: 34px;

@@ -18,17 +18,27 @@ watch(route, (to, from) => {
   const toDepth = routes.findIndex((v) => v.path === to.path)
   const fromDepth = routes.findIndex((v) => v.path === from.path)
   transitionName.value = toDepth > fromDepth ? 'go' : 'back'
-  console.log('Transition Name:', transitionName.value)
+  if (to.name === 'home') {
+    // alert()
+    store.updateExcludeNames({ type: 'remove', value: 'home' });
+  } else {
+    store.updateExcludeNames({ type: 'add', value: 'home' });
+  }
 })
+
+// 获取所有需要 keep-alive 的路由名
+const keepAliveRoutes = computed(() => {
+  const routeMeta = route.meta.keepAlive;
+  return routeMeta ? [String(route.name)] : []; // 如果当前路由的 meta 配置了 keepAlive，则启用 keep-alive
+});
 
 onMounted(() => {
-  console.log(`${name} onMounted`)
+  console.log('Mounted:', store.excludeNames);
 })
 </script>
-
 <template>
   <AppProvider>
-    <router-view v-slot="{ Component }">
+    <router-view v-slot="{ Component, route }">
       <Transition :name="transitionName" appear>
         <main>
           <template v-if="route.meta.navType === 'default'">
@@ -36,13 +46,25 @@ onMounted(() => {
               <van-nav-bar :title="title" left-arrow @click-left="onClickLeft" />
             </div>
           </template>
-          <keep-alive :exclude="store.excludeNames">
+          <!-- <keep-alive :exclude="[...store.excludeNames]">
+            <component :is="Component" />
+          </keep-alive> -->
+          <keep-alive :include="keepAliveRoutes">
             <component :is="Component" />
           </keep-alive>
+          <!-- <keep-alive>
+            <component v-if="route.meta.keepAlive" :is="Component" :key="route.path" />
+          </keep-alive> -->
         </main>
       </Transition>
     </router-view>
   </AppProvider>
+  <!-- <router-view v-slot="{ Component }">
+    <keep-alive>
+      <component v-if="$route.meta.keepAlive" :is="Component" :key="$route.path" />
+    </keep-alive>
+    <component :is="Component" v-if="!$route.meta.keepAlive" />
+  </router-view> -->
 </template>
 
 <style scoped>
