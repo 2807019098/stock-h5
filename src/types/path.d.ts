@@ -59,5 +59,11 @@ declare module '@/utils' {
     export function getClientInfo(): any
     export function getQueryString(key: string, url?: string): string | null
     export function getURLParameters(url?: string): Record<string, string>
+    export function smoothScrollTo(element: HTMLElement, target: number, duration?: number): Promise<void>
+}
+
+declare module '@/components/*' {
+    const component: any
+    export default component
 }
 

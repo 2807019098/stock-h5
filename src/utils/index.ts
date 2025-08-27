@@ -64,3 +64,32 @@ export function getClientInfo() {
 export function getAssetsUrl(name: string) {
   return new URL(`/src/assets/${name}`, import.meta.url).href
 }
+
+/**
+ * 平滑滚动元素到指定的垂直位置
+ *
+ * @param element - 需要滚动的元素
+ * @param target - 目标滚动位置（scrollTop）
+ * @param duration - 动画持续时间，单位毫秒，默认300ms
+ * @returns Promise<void>
+ */
+export function smoothScrollTo(element: HTMLElement, target: number, duration = 300): Promise<void> {
+  return new Promise((resolve) => {
+    const start = element.scrollTop;
+    const change = target - start;
+    const startTime = performance.now();
+
+    function animateScroll(currentTime: number) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      element.scrollTop = start + change * progress;
+      if (progress < 1) {
+        requestAnimationFrame(animateScroll);
+      } else {
+        resolve();
+      }
+    }
+
+    requestAnimationFrame(animateScroll);
+  });
+}
