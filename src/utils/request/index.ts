@@ -31,14 +31,15 @@ axiosInstance.interceptors.request.use(async (config: InternalAxiosRequestConfig
 });
 
 axiosInstance.interceptors.response.use(
-  async (response: AxiosResponse<ApiResponse>) => {
+  async (response: AxiosResponse<ApiResponse<any>>) => {
     try {
-      const { message } = response.data;
+      const { code, msg, data } = response.data;
+
       const config = requestQueue.find(
         (item) => item.requestId === (response.config as MyRequestConfig).requestId
       );
       if (config) requestQueue.splice(requestQueue.indexOf(config), 1); // 移除已处理的请求
-      if (message.messagE_CODE === '401') {
+      if (code === 401) {
         const userStore = useUserStore();
         if (!isRefreshing) {
           isRefreshing = true;
@@ -54,7 +55,7 @@ axiosInstance.interceptors.response.use(
             requestQueue.push(() => resolve(axiosInstance(response.config)));
           });
         }
-      } else if (message.messagE_CODE === '100001') {
+      } else if (code === 100001) {
         const userStore = useUserStore();
         userStore.clearToken();
         if (requestFailureCount < MAX_FAILURE_DIALOGS) {
@@ -79,13 +80,13 @@ axiosInstance.interceptors.response.use(
           // 超过弹窗次数，直接刷新页面
           window.location.reload();
         }
-      } else if (message.messagE_CODE === '0') {
+      } else if (code === 0) {
         // 处理常规错误，显示错误信息并提供重试按钮
         if (requestFailureCount < MAX_FAILURE_DIALOGS) {
           requestFailureCount++;
           showDialog({
             title: '股市一筋',
-            message: message.messagE_TEXT || '系统异常，请稍后再试。',
+            message: msg || '系统异常，请稍后再试。',
             width: '80%',
             confirmButtonText: '重试',
             confirmButtonColor: 'var(--color-primary)',

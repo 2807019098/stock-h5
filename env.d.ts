@@ -18,3 +18,5 @@ const __APP_INFO__: {
 }
 
 declare module 'vue-virtual-scroller'
+
+declare module 'amfe-flexible'

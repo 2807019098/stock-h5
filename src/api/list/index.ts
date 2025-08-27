@@ -6,9 +6,8 @@ import request from '@/utils/request'
  */
 export function GetStockList(params: Recordable) {
   return request({
-    url: '/api/StockList/GetStockList',
+    url: '/api/stocklist/getstocklist',
     method: 'POST',
-    headers: {},
     data: params
   })
 }
@@ -20,9 +19,8 @@ export function GetStockList(params: Recordable) {
  */
 export function GetMyStockList(params: Recordable) {
   return request({
-    url: '/api/StockList/GetMyStockList',
+    url: '/api/stocklist/getmystocklist',
     method: 'POST',
-    headers: {},
     data: params
   })
 }
@@ -34,9 +32,8 @@ export function GetMyStockList(params: Recordable) {
  */
 export function AddStock(params: Recordable) {
   return request({
-    url: '/api/StockList/AddStock',
+    url: '/api/stocklist/addstock',
     method: 'POST',
-    headers: {},
     data: params
   })
 }
@@ -48,9 +45,8 @@ export function AddStock(params: Recordable) {
  */
 export function DeleteStock(params: Recordable) {
   return request({
-    url: '/api/StockList/DeleteStock',
+    url: '/api/stocklist/deletestock',
     method: 'POST',
-    headers: {},
     data: params
   })
 }

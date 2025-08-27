@@ -1,13 +1,14 @@
 import request from '@/utils/request'
 import type { MyRequestConfig } from '@/utils/request/type'
+import type { FastRegisterLoginRequestModel } from "@/model/apiModel/Member/FastRegisterLoginModel"
 
 //#region 用户快速登录注册
 /**
  * 用户快速登录注册
  */
-export function FastRegisterLogin(params: Recordable) {
+export function FastRegisterLogin(params: FastRegisterLoginRequestModel) {
   return request({
-    url: '/api/Member/FastRegisterLogin',
+    url: '/api/member/fastregisterlogin',
     method: 'POST',
     data: params,
     authRequired: true
@@ -21,7 +22,7 @@ export function FastRegisterLogin(params: Recordable) {
  */
 export function GetRefreshToken(params: Recordable) {
   return request({
-    url: '/api/Member/GetRefreshToken',
+    url: '/api/member/refreshtoken',
     method: 'POST',
     data: params,
     authRequired: true
@@ -35,7 +36,7 @@ export function GetRefreshToken(params: Recordable) {
  */
 export function BindMobile(params: Recordable) {
   return request({
-    url: '/api/Member/BindMobile',
+    url: '/api/member/bindmobile',
     method: 'POST',
     data: params
   })
@@ -48,7 +49,7 @@ export function BindMobile(params: Recordable) {
  */
 export function GetMeberInfo(params: Recordable) {
   return request({
-    url: '/api/Member/GetMeberInfo',
+    url: '/api/member/getmberinfo',
     method: 'POST',
     data: params
   })

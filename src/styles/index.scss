@@ -12,7 +12,8 @@ main {
   overflow: hidden;
 }
 
-body {
+body,
+html {
   font-family: variable.$font-family-base;
   font-size: 16px;
   color: var(--color-text-1);
@@ -62,4 +63,37 @@ body {
 
 .dialogClass {
   z-index: 100001 !important;
+}
+
+@media screen and (min-width: 500px) and (max-width: 768px) {
+  html {
+    font-size: 90px !important;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1199px) {
+  html {
+    font-size: 100px !important;
+  }
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1599px) {
+  html {
+    font-size: 110px !important;
+  }
+}
+
+@media screen and (min-width: 1600px) {
+  html {
+    font-size: 120px !important;
+  }
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }

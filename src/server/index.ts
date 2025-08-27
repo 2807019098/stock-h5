@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { showToast, showDialog } from 'vant'
+import type { ApiResponse } from '../utils/request/type'
 
 type AxiosInstance = any
 
@@ -25,15 +26,15 @@ axiosInstance.interceptors.request.use(
 )
 
 axiosInstance.interceptors.response.use(
-  (response: any) => {
+  (response: ApiResponse<any>) => {
     try {
-      switch (response.data.message.messagE_CODE) {
-        case '100001':
+      switch (response.data.code) {
+        case 100001:
           sessionStorage.clear()
 
           showDialog({
             title: '股市一筋',
-            message: response.data.message.messagE_TEXT,
+            message: response.data.msg,
             confirmButtonText: '点击重试',
             confirmButtonColor: '#2B3B51',
             className: 'dialogClass',
@@ -48,9 +49,9 @@ axiosInstance.interceptors.response.use(
 
           break
 
-        case '0':
+        case 0:
           showToast({
-            message: response.data.message.messagE_TEXT
+            message: response.data.msg
           })
 
           break
@@ -58,7 +59,7 @@ axiosInstance.interceptors.response.use(
         default:
           break
       }
-    } catch (error) {}
+    } catch (error) { }
     return Promise.resolve(response.data)
   },
 
@@ -119,8 +120,8 @@ function checkNetworkStatus() {
     while (requestQueue.length > 0) {
       const config = requestQueue.shift()
       axiosInstance(config)
-        .then((_response: any) => {})
-        .catch((_error: any) => {})
+        .then((_response: any) => { })
+        .catch((_error: any) => { })
     }
   }
 }

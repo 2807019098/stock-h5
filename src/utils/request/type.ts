@@ -10,12 +10,9 @@ export interface MyRequestConfig<T = any> extends AxiosRequestConfig {
   data: T;
 }
 
-export interface ApiResponse {
-  message: {
-    messagE_CODE: string;
-    messagE_TEXT: string;
-    exceptioN_TEXT: string;
-    serveR_TIME: string;
-  };
-  result: any;
+export interface ApiResponse<T> {
+  code: number
+  msg: string | null
+  data?: T
+  success: string
 }

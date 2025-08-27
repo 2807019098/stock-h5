@@ -15,6 +15,7 @@ declare module 'vue' {
     IconPayFail: typeof import('./components/icons/IconPayFail.vue')['default']
     IconPaySuccess: typeof import('./components/icons/IconPaySuccess.vue')['default']
     IconSkin: typeof import('./components/icons/IconSkin.vue')['default']
+    RadioGroup: typeof import('./components/Common/RadioGroup.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ScreenPannel: typeof import('./components/Layout/ScreenPannel.vue')['default']

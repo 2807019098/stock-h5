@@ -43,3 +43,21 @@ declare module '@/common/*' {
     export default common
 }
 
+declare module '@/common/app/index' {
+    export const palettes: any[]
+    export const theme: any
+    export const darkTheme: any
+}
+
+declare module '@/store/app' {
+    export function useBaseStore(): any
+    export function useAppStoreWithOut(): any
+}
+
+declare module '@/utils' {
+    export function getAssetsUrl(name: string): string
+    export function getClientInfo(): any
+    export function getQueryString(key: string, url?: string): string | null
+    export function getURLParameters(url?: string): Record<string, string>
+}
+

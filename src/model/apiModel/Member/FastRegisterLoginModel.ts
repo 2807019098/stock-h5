@@ -2,18 +2,41 @@
  * 用户快速登录注册
  */
 
+import type { LoginType } from '@/enum';
 import type { GetRefreshTokenResponseModel } from './GetRefreshTokenModel'
 
-interface FastRegisterLoginRequestModel {
-  OPENID: string // 微信OPENID
-  LoginType: string // 登录类型(小程序登录 = 1,微信登录 = 2,手机号登录 = 3)
-  Mobile: string // 手机号
-  HeaderUrl: string // 用户头像
-  UserName: string // 用户名称
+
+interface WeChatLogin {
+  loginType: LoginType.微信登录;
+  wechatOpenId: string;
+  mobile?: never;
+  smsCode?: never;
+  userName?: never;
+  passWord?: never;
 }
 
+interface UserNameLogin {
+  loginType: LoginType.用户名登录;
+  userName: string;
+  passWord: string;
+  mobile?: never;
+  smsCode?: never;
+  wechatOpenId?: never;
+}
+
+interface MobileLogin {
+  loginType: LoginType.手机号登录;
+  mobile: string;
+  smsCode: string;
+  userName?: never;
+  passWord?: never;
+  wechatOpenId?: never;
+}
+
+type FastRegisterLoginRequestModel = WeChatLogin | UserNameLogin | MobileLogin;
+
 interface FastRegisterLoginResponseModel extends GetRefreshTokenResponseModel {
-  userId: string // 用户ID
+  userId: string;
 }
 
 export type { FastRegisterLoginRequestModel, FastRegisterLoginResponseModel }

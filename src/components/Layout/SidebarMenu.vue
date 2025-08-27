@@ -16,7 +16,22 @@ const handleMenu = () => {
 }
 
 const openFilter = () => {
+  console.log('点击筛选按钮')
   filter.value = true
+  console.log('filter值已设置为:', filter.value)
+}
+
+const emit = defineEmits<{
+  'filter-change': [data: any]
+}>()
+
+const handleFilterChange = (filterData: any) => {
+  console.log('筛选条件变化:', filterData)
+  // 触发全局事件，让home页面能够接收到
+  window.dispatchEvent(new CustomEvent('stock-filter-change', {
+    detail: filterData
+  }))
+  emit('filter-change', filterData)
 }
 
 watch(show, (newValue: boolean) => {
@@ -60,7 +75,7 @@ watch(show, (newValue: boolean) => {
         </div>
       </div>
     </van-popup>
-    <ScreenPannel :show="filter" />
+    <ScreenPannel v-model:show="filter" @filter-change="handleFilterChange" />
   </teleport>
 </template>
 <style lang="scss" scoped>

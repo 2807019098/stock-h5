@@ -48,6 +48,8 @@ import { onBeforeUnmount, onMounted, ref, computed, nextTick, onActivated } from
 import { useRoute } from 'vue-router';
 import { useUserStore } from '@/store/user';
 import { GetStockList } from '@/api/list';
+import { LoginType } from '@/enum';
+import { showToast } from 'vant';
 
 defineOptions({
   name: 'home'
@@ -64,49 +66,58 @@ const hasMore = ref(true);
 
 const login = async () => {
   const payload = {
-    businesS_PARAMETERS: {
-      openid: '',
-      loginType: 3,
-      mobile: '13345343544',
-      headerUrl: '',
-      userName: ''
-    },
-    systeM_PARAMETERS: {
-      appid: '',
-      accesS_TOKEN: '',
-      timestamp: '',
-      sign: 'zhikaisoft'
-    }
+    loginType: Number(LoginType.手机号登录),
+    mobile: '13345343544',
+    smsCode: '123456',
+    // userName: '',
+    // passWord: '',
+    // wechatOpenId: '',
   }
   await userStore.login(payload);
 }
+
+import { useFilterStore } from '@/store/filter'
+
+// 使用Pinia状态管理
+const filterStore = useFilterStore()
 
 const getStockList = async () => {
   if (!hasMore.value || loading.value) return;
   loading.value = true;
   try {
-    const payload = {
-      businesS_PARAMETERS: {
-        offset: offset.value,
-        limit: limit.value,
-        sortField: 'day1Dif',
-        sortAsc: '1',
-        keyword: '',
-        ismy: '',
-        yili: '1',
-        dax: '',
-        xianzhi: '20'
-      },
-      systeM_PARAMETERS: {
-        appid: '',
-        accesS_TOKEN: '',
-        timestamp: '',
-        sign: 'zhikaisoft'
-      }
+    // 构建筛选参数
+    const { profit, bigDays, changeRange, sortType, sortOrder } = filterStore.filterData
+
+    console.log('=== getStockList 开始 ===')
+    console.log('当前筛选条件:', { profit, bigDays, changeRange, sortType, sortOrder })
+
+    // 映射排序字段
+    const sortFieldMap: Record<string, string> = {
+      'fronterror': 'day1Dif',
+      '1day': 'day1_2',
+      '2day': 'day2_1',
+      'xday': 'xdayb'
     }
+
+    const payload = {
+      offset: offset.value,
+      limit: limit.value,
+      sortField: sortFieldMap[sortType] || 'day1Dif',
+      sortAsc: sortOrder === 'asc' ? '1' : sortOrder === 'desc' ? '0' : '',
+      keyword: '',
+      ismy: '',
+      yili: profit === '1' ? '1' : '',
+      dax: bigDays === '1' ? '1' : '',
+      xianzhi: changeRange > 0 ? changeRange.toString() : ''
+    }
+
+    console.log('API请求参数:', payload)
+    console.log('=== getStockList 结束 ===')
+
     const response = await GetStockList(payload);
-    if (response.data.message.messagE_CODE === '1') {
-      let { sList, page } = response.data.result;
+    const result = response.data;
+    if (result.code === 1) {
+      let { sList, page } = result.data;
       let { nextOffset, hasMore: newHasMore } = page;
       if (sList.length > 0) {
         const uniqueStockList = new Map(list.value.map((item) => [item.stockCode, item]));
@@ -157,22 +168,87 @@ const onRefresh = async () => {
   }
 }
 
+// 测试筛选功能
+const testFilter = async () => {
+  console.log('=== 测试筛选功能 ===')
+
+  // 测试1: 直接更新store
+  const testData = {
+    profit: '1',
+    bigDays: '1',
+    changeRange: 20,
+    sortType: '1day',
+    sortOrder: 'asc'
+  }
+
+  console.log('测试数据:', testData)
+  filterStore.updateFilter(testData)
+  console.log('更新后的store数据:', filterStore.filterData)
+
+  // 测试2: 重置列表并重新加载
+  offset.value = 0
+  hasMore.value = true
+  list.value = []
+
+  // 测试3: 调用API
+  await getStockList()
+
+  console.log('=== 测试完成 ===')
+}
+
+// 处理筛选条件变化
+const handleFilterChange = (filterData: any) => {
+  // 更新Pinia状态
+  filterStore.updateFilter(filterData)
+  // 重置列表并重新加载
+  offset.value = 0
+  hasMore.value = true
+  list.value = []
+  getStockList()
+}
+
+// 处理重置筛选条件
+const handleResetFilter = () => {
+  // 重置列表并重新加载
+  offset.value = 0
+  hasMore.value = true
+  list.value = []
+  getStockList()
+  showToast('数据已重新加载')
+}
+
+
+
 onBeforeUnmount(() => { })
 
 onMounted(async () => {
+  // 监听全局筛选事件
+  window.addEventListener('stock-filter-change', (event: any) => {
+    handleFilterChange(event.detail)
+  })
 
+  // 监听重置事件
+  window.addEventListener('stock-filter-reset', () => {
+    handleResetFilter()
+  })
 });
 
 onActivated(async () => {
   await login();
   await getStockList();
 });
+
+onBeforeUnmount(() => {
+  // 移除事件监听器
+})
 </script>
 <style scoped lang="scss">
 .container {
   padding: 0 12px;
   overflow: hidden;
   height: 100%;
+
+
 
   .ranking-list-li {
     overflow: hidden;
@@ -184,7 +260,6 @@ onActivated(async () => {
       display: flex;
       font-size: 14px;
       font-weight: 400;
-      padding: 0 5px;
       position: sticky;
       top: 0;
       z-index: 100;

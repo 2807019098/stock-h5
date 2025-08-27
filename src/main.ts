@@ -4,7 +4,7 @@ import { setupStore } from './store'
 import 'amfe-flexible'
 import App from '@/App.vue'
 import router from './router'
-import { ConfigProvider, NavBar, Dialog, Toast, List, BackTop, Loading, PullRefresh } from 'vant'
+import { ConfigProvider, NavBar, Dialog, Toast, List, BackTop, Loading, PullRefresh, Popup, Checkbox, CheckboxGroup, Radio, RadioGroup as VanRadioGroup, Slider, Button, Icon } from 'vant'
 import VueVirtualScroller from 'vue-virtual-scroller'
 import 'vant/lib/index.css'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
@@ -22,4 +22,12 @@ app.use(BackTop)
 app.use(Loading)
 app.use(VueVirtualScroller)
 app.use(PullRefresh)
+app.use(Popup)
+app.use(Checkbox)
+app.use(CheckboxGroup)
+app.use(Radio)
+app.use(VanRadioGroup)
+app.use(Slider)
+app.use(Button)
+app.use(Icon)
 app.mount('#app')

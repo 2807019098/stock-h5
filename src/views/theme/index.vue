@@ -12,7 +12,7 @@ const appStore = useBaseStore()
 // const { theme } = usePage();
 const theme = computed(() => appStore.getTheme)
 
-const modeList = ref<Recordable[]>([
+const modeList = ref<Record<string, any>[]>([
   {
     value: 'light',
     label: '浅色',
@@ -36,7 +36,7 @@ function onThemeModeChange(value: string) {
   })
 }
 
-const list = ref<Recordable[]>(
+const list = ref<Record<string, any>[]>(
   palettes.map((v: any) => ({
     ...v,
     colorList: [v.colors.primary, v.colors.vice, '#fff']

@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
 import storage from 'good-storage';
 import { FastRegisterLogin, GetRefreshToken } from '@/api/user';
 import router from '@/router';
+import type { FastRegisterLoginRequestModel } from "@/model/apiModel/Member/FastRegisterLoginModel"
+import type { GetRefreshTokenRequestModel } from "@/model/apiModel/Member/GetRefreshTokenModel";
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -17,7 +18,7 @@ export const useUserStore = defineStore('user', {
     }
   },
   actions: {
-    async login(payload: Recordable = {}) {
+    async login(payload: FastRegisterLoginRequestModel) {
       // 如果 token 有效，直接使用已有的 token，不需要重新登录
       if (this.isTokenValid) {
         this.token = storage.get('token');
@@ -26,14 +27,15 @@ export const useUserStore = defineStore('user', {
       }
 
       const response = await FastRegisterLogin(payload);
-      const { message, result } = response.data;
-      if (message.messagE_CODE === '1') {
+      const result = response.data;
+      if (result.code === 1) {
         const expiryTime = Date.now() + result.expires_in * 1000;
         storage.set('tokenExpiry', expiryTime);
-        storage.set('token', result.access_token);
-        storage.set('refreshToken', result.refresh_token);
-        this.token = result.access_token;
+        storage.set('token', result.data.access_token);
+        storage.set('refreshToken', result.data.refresh_token);
+        this.token = result.data.access_token;
         this.tokenExpiry = expiryTime;
+        console.log(result);
       }
     },
     logout() {
@@ -55,32 +57,24 @@ export const useUserStore = defineStore('user', {
           return null;
         }
 
-        const payload = {
-          businesS_PARAMETERS: {
-            refreshToken: refreshToken
-          },
-          systeM_PARAMETERS: {
-            appid: '',
-            accesS_TOKEN: '',
-            timestamp: '',
-            sign: 'zhikaisoft'
-          }
+        const payload: GetRefreshTokenRequestModel = {
+          RefreshToken: refreshToken
         };
-
+        // 调用刷新令牌接口
         const response = await GetRefreshToken(payload);
-        const { message, result } = response.data;
+        const result = response.data;
 
-        if (message.messagE_CODE === '1') {
-          const expiryTime = Date.now() + result.expires_in * 1000;
+        if (result.code === 1) {
+          const expiryTime = Date.now() + result.data.expires_in * 1000;
           storage.set('tokenExpiry', expiryTime);
-          storage.set('token', result.access_token);
-          storage.set('refreshToken', result.refresh_token); // 更新refresh token
-          this.token = result.access_token;
+          storage.set('token', result.data.access_token);
+          storage.set('refreshToken', result.data.refresh_token); // 更新refresh token
+          this.token = result.data.access_token;
           this.tokenExpiry = expiryTime;
           console.log('Token refreshed successfully');
-          return result.access_token;
+          return result.data.access_token;
         } else {
-          console.warn('Token refresh failed:', message.messagE_TEXT);
+          console.warn('Token refresh failed:', result.msg);
           this.clearToken();
           return null;
         }
